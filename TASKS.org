@@ -2,8 +2,7 @@
 
 Plan as much as possible.
 
-
-*** TODO Add SDL and GLM dependencies.
+*** DONE Add SDL and GLM dependencies.
 *** TODO Initialise SDL and OpenGL.
 *** TODO Create window and main game loop.
 *** TODO Set Fixed Framerate to whatever Hz the current monitor has.
