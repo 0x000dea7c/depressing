@@ -32,6 +32,8 @@ It's an attempt to make a 2D side-scroller game.
 - Saving and loading games.
 - Basic file configuration, especially for sound because I don't want to turn down the volume every time I open the god damn game.
 - Is it possible to pack the game into a single executable? Like these weird appimages. That'd be cool.
+- Allow changing resolution and scale the game accordingly.
+- Use parallax scrolling to add a sense of depth.
 - ...
 
 ** Tools
@@ -55,3 +57,7 @@ make run
 #+END_SRC
 
 TODO: How does an AppImage work?
+
+** Assets
+
+TODO: add mentions
