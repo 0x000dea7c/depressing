@@ -1,0 +1,10 @@
+** List of tasks
+
+Plan as much as possible.
+
+
+*** TODO Add SDL and GLM dependencies.
+*** TODO Initialise SDL and OpenGL.
+*** TODO Create window and main game loop.
+*** TODO Handle SDL events and all input keys. Store input state.
+*** TODO ...
