@@ -23,7 +23,7 @@ It's an attempt to make a 2D side-scroller game.
 - Implement a state machine to transition between game states. I won't be using switches all over the place because I will follow an Object Oriented approach, so it's time for polymorphism and possibly lose performance chasing freaking virtual pointers. Let's see how it goes.
 - Enough is enough. My previous games suffered from tunneling, that is, when moving objects go over some other objects when they shouldn't. I don't even know why that happens, but I need to figure that shit out by NOW.
 - Do acceptable collision detection and resolution.
-- Incorporate decent AI to the game (A*). Make them do meaningful movements.
+- Incorporate decent AI to the game. Make them do meaningful movements.
 - Add some freaking life to the game and support animations for some moving objects. Yeah.
 - Add an intro cinematic because it's pretty and I don't know how to do it yet.
 - Don't use any engines, it's all C++ and OpenGL.
@@ -41,8 +41,6 @@ It's an attempt to make a 2D side-scroller game.
 - Modern GCC (that supports C++23)
 - Make
 - Emacs
-- GIMP
-- Blender
 
 ** Compile
 
