@@ -1,0 +1,59 @@
+* depressing
+
+It's an attempt to make a 2D side-scroller game.
+
+** Dependencies That You Need To Install
+
+- SDL2 (system-wide)
+- GLM  (system-wide)
+
+** Things I Will Not Address In This Project
+
+- Since I'm stupid and I couldn't find a "Data Oriented Design For Idiots" nor an "Entity Component Systems For Idiots" material, I'm going to proceed with an Object Oriented approach. Why? Because there is idiot proof material for that, so I can follow. Everyone knows OOP can potentially be a fucking disaster performance-wise, and it's likely that my CPU-chan will want to kill me, but I will try to be gentle.
+- I won't code my own data structures because in order to code them effectively in C++ you need to know about template metaprogramming and I know little about that at the moment. I will be using the standard's data structures.
+- I don't give a crap about Windows, so I won't port anything to that dirty and unethical platform (same goes for Mac). It's not like this matters either way.
+- I know more or less how to create and manage an X11 window, but since Wayland is the default in modern GNU/Linux systems, I will be using the SDL library to handle all of that. SDL also helps a lot with audio management. Thank you, SDL bros.
+- I coded my own math library in my previous project, but doing vector and matrix operations without knowing SIMD is just a crime. This time I will be using GLM's library because it supports SIMD.
+
+** Technical Challenges For This Project
+
+- PLAN AHEAD YOUR GAME, DON'T BE AN IDIOT! Not everything, of course. Some things happen on the fly, BUT NOT THE GOD DAMN BASICS.
+- Implement a state machine to transition between game states. I won't be using switches all over the place because I will follow an Object Oriented approach, so it's time for polymorphism and possibly lose performance chasing freaking virtual pointers. Let's see how it goes.
+- Enough is enough. My previous games suffered from tunneling, that is, when moving objects go over some other objects when they shouldn't. I don't even know why that happens, but I need to figure that shit out by NOW.
+- Do acceptable collision detection and resolution.
+- Incorporate decent AI to the game. Make them do meaningful movements.
+- Add some freaking life to the game and support animations for some moving objects. Yeah.
+- Add an intro cinematic because it's pretty and I don't know how to do it yet.
+- Don't use any engines, it's all C++ and OpenGL.
+- Make something engaging.
+- Create a pretty main menu. Enough of crappy UI.
+- Saving and loading games.
+- Basic file configuration, especially for sound because I don't want to turn down the volume every time I open the god damn game.
+- Is it possible to pack the game into a single executable? Like these weird appimages. That'd be cool.
+- Allow changing resolution and scale the game accordingly.
+- Use parallax scrolling to add a sense of depth.
+- ...
+
+** Tools
+
+- Modern GCC (that supports C++23)
+- Make
+- Emacs
+
+** Compile
+
+#+BEGIN_SRC
+make
+#+END_SRC
+
+** Run
+
+#+BEGIN_SRC
+make run
+#+END_SRC
+
+TODO: How does an AppImage work?
+
+** Assets
+
+TODO: add mentions

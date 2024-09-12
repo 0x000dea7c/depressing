@@ -1,6 +1,16 @@
 #pragma once
 
+#include "types.H"
+
 namespace depressing
 {
-  void window_toggle_fullscreen();
+  // Prototypes for platform dependent code.
+
+  b32  window_create ();
+  b32  window_toggle_fullscreen ();
+  b32  window_set_title (char const* title);
+
+  void game_run ();
+  void game_shutdown ();
+  bool game_is_shutting_down ();
 };
