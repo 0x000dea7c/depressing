@@ -213,7 +213,7 @@ depressing::window::init ()
 
   if (!_window)
     {
-      std::print("{0} - Couldn't create SDL window: %s\n", __FUNCTION__, SDL_GetError());
+      std::print("{0} - Couldn't create SDL window: {1}\n", __FUNCTION__, SDL_GetError());
       return false;
     }
 
@@ -222,13 +222,13 @@ depressing::window::init ()
 
   if (display_index < 0)
     {
-      std::print("{0} - Couldn't get display index info: %s\n", __FUNCTION__, SDL_GetError());
+      std::print("{0} - Couldn't get display index info: {1}\n", __FUNCTION__, SDL_GetError());
       return false;
     }
 
   if (SDL_GetDesktopDisplayMode (display_index, &display_mode) != 0)
     {
-      std::print("{0} - Couldn't get desktop display mode: %s\n", __FUNCTION__, SDL_GetError());
+      std::print("{0} - Couldn't get desktop display mode: {1}\n", __FUNCTION__, SDL_GetError());
       return false;
     }
 
