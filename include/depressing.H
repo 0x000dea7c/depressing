@@ -12,5 +12,5 @@ namespace depressing
 
   void game_run ();
   void game_shutdown ();
-  bool game_is_shutting_down ();
+  b32  game_is_shutting_down ();
 };

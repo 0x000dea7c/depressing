@@ -5,10 +5,43 @@ Plan as much as possible.
 *** DONE Add SDL and GLM dependencies.
 *** DONE Initialise SDL and OpenGL.
 *** DONE Statically compile or dynamically? Static is a fucking nightmare for some reason -> dynamically compile
-Too much trouble with static linking, not sure why.
+  Too much trouble with static linking, not sure why.
 
 *** DONE Create window and prototype of main game loop.
-*** TODO Set Fixed Framerate to whatever Hz the current monitor has.
+*** TODO Set Fixed Framerate.
+  The update of game logic and physics should run at a fixed interval, e.g., 60 times per second.
+  Rendering, however, needs to happen as much as possible.
+
+  If the game "falls behind" because of a bad frame (drop of fps), then the update should "catch up" by running multiple
+  updates in a single frame.
+
+  Because rendering runs as much as possible, I need to apply interpolation (how the fuck)?
+
+  Event handling should be done at variable or fixed time?
+
+  How do you implement this? What kind of interpolation are they talking about? Interpolate transforms or what?
+
+  Implementing a fixed timestep loop
+
+  1. Compute delta time elapsed since last frame (classic delta time)
+  2. Accumulate delta time to see if physics update threshold reached
+  3. if (time_elapsed >= fixed_timestep) update_physics_step ();
+  4. Repeat update_physics_step () until it "catches up" with accumulated delta time.
+  5. Interpolate between last two physics steps for rendering.
+
+  Points 4 and 5 are not clear. How do I "catch up" exactly? What does it mean to "interploate between last N steps"?
+
+  Input is done at a variable rate or every frame, but I need to keep in mind that:
+
+  - Instantaneous inputs like jumping need to be processed as soon as they happen, before the fixed update.
+  - Continuous inputs like movement, holding a key, need to be processed during the fixed time step.
+
+  I need to use a queue to store input events and in order to not miss any, call the functions to process them (player->process_input ()
+  
+  The physics update is going to save the previous positions before doing the update and compute the new ones.
+
+  The renderer will compute an interpolated state between previous_positions and current_positions following the formula: interpolated_state = previous_state + alpha * (current_state - previous_state)
+
 *** TODO Handle SDL events and all input keys. Store input state.
 *** TODO Render a white bg and player texture.
 *** TODO Design game_entity class or something like that.

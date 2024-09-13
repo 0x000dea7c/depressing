@@ -56,7 +56,7 @@ namespace depressing
   public:
     SDL_subsystem () = default;
 
-    bool
+    b32
     init ()
     {
       i32 constexpr flags                {SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER};
@@ -116,7 +116,7 @@ namespace depressing
     quit = true;
   }
 
-  bool
+  b32
   game_is_shutting_down ()
   {
     return quit;
@@ -132,7 +132,7 @@ namespace depressing
 	while (SDL_PollEvent (&event))
 	  {
 	    b32 user_forces_shutdown {
-	      event.type == SDL_QUIT ||
+	      (event.type == SDL_QUIT) ||
 	      (event.type == SDL_WINDOWEVENT &&
 	       event.window.event == SDL_WINDOWEVENT_CLOSE &&
 	       event.window.windowID == SDL_GetWindowID(game_window->get_window()))
