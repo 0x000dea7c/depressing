@@ -86,8 +86,8 @@ namespace depressing
   private:
     std::array<b32, static_cast<u32>(key_codes::count)> _prev_keys;
     std::array<b32, static_cast<u32>(key_codes::count)> _curr_keys;
-    std::array<b32, static_cast<u32>(key_codes::count)> _prev_mouse_buttons;
-    std::array<b32, static_cast<u32>(key_codes::count)> _curr_mouse_buttons;
+    std::array<b32, static_cast<u32>(mouse_buttons::count)> _prev_mouse_buttons;
+    std::array<b32, static_cast<u32>(mouse_buttons::count)> _curr_mouse_buttons;
     glm::vec2 _mouse_pos;
     b32 _is_mouse_moving;
   };

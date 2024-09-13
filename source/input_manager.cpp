@@ -7,7 +7,7 @@ namespace depressing
       _curr_keys          {},
       _prev_mouse_buttons {},
       _curr_mouse_buttons {},
-      _mouse_pos          {glm::vec2{0.f}},
+      _mouse_pos          {glm::vec2 {0.f}},
       _is_mouse_moving    {false}
   {
   }
