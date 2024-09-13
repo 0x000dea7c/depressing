@@ -154,10 +154,10 @@ namespace depressing
 	  return false;
 	}
 
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OpenGL_major_version);
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OpenGL_minor_version);
-      SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, OpenGL_double_buffer);
-      SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, OpenGL_depth_size);
+      SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, OpenGL_major_version);
+      SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, OpenGL_minor_version);
+      SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, OpenGL_double_buffer);
+      SDL_GL_SetAttribute (SDL_GL_DEPTH_SIZE, OpenGL_depth_size);
 
       return true;
     }
@@ -226,7 +226,7 @@ namespace depressing
 
 	    if (user_forces_shutdown)
 	      {
-		game_shutdown();
+		game_shutdown ();
 		break;
 	      }
 
@@ -256,7 +256,7 @@ namespace depressing
 	glClearColor(0.f, 0.f, 0.f, 1.f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	SDL_GL_SwapWindow(game_window->get_window());
+	SDL_GL_SwapWindow(game_window->get_window ());
       }
   }
 };
