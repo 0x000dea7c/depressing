@@ -1,7 +1,9 @@
 #include "SDL.h"
-#include "depressing.H"
-#include "types.H"
+#include "depressing.h"
+#include "types.h"
 #include "glad/glad.h"
+
+#include "input_manager.cpp"
 
 #include <glm/glm.hpp>
 #include <print>
@@ -13,12 +15,93 @@ namespace depressing
   class window;
 };
 
+// These functions go here because they are dependent on a library (SDL). If you ever need to change the
+// library you're using for input handling, the idea is to only modify this file.
+static depressing::key_codes
+SDL_key_to_engine (i32 sdl_key)
+{
+  switch (sdl_key)
+    {
+    case SDLK_q:
+      return depressing::key_codes::q;
+    case SDLK_w:
+      return depressing::key_codes::w;
+    case SDLK_e:
+      return depressing::key_codes::e;
+    case SDLK_r:
+      return depressing::key_codes::r;
+    case SDLK_t:
+      return depressing::key_codes::t;
+    case SDLK_y:
+      return depressing::key_codes::y;
+    case SDLK_u:
+      return depressing::key_codes::u;
+    case SDLK_i:
+      return depressing::key_codes::i;
+    case SDLK_o:
+      return depressing::key_codes::o;
+    case SDLK_p:
+      return depressing::key_codes::p;
+    case SDLK_a:
+      return depressing::key_codes::a;
+    case SDLK_s:
+      return depressing::key_codes::s;
+    case SDLK_d:
+      return depressing::key_codes::d;
+    case SDLK_f:
+      return depressing::key_codes::f;
+    case SDLK_g:
+      return depressing::key_codes::g;
+    case SDLK_h:
+      return depressing::key_codes::h;
+    case SDLK_j:
+      return depressing::key_codes::j;
+    case SDLK_k:
+      return depressing::key_codes::k;
+    case SDLK_l:
+      return depressing::key_codes::l;
+    case SDLK_z:
+      return depressing::key_codes::z;
+    case SDLK_x:
+      return depressing::key_codes::x;
+    case SDLK_c:
+      return depressing::key_codes::c;
+    case SDLK_v:
+      return depressing::key_codes::v;
+    case SDLK_b:
+      return depressing::key_codes::b;
+    case SDLK_n:
+      return depressing::key_codes::n;
+    case SDLK_m:
+      return depressing::key_codes::m;
+    case SDLK_ESCAPE:
+      return depressing::key_codes::esc;
+    default:
+      return depressing::key_codes::not_handled;
+    }
+}
+
+static depressing::mouse_buttons
+SDL_mouse_button_to_engine (i32 sdl_mouse_button)
+{
+  switch (sdl_mouse_button)
+    {
+    case SDL_BUTTON_LEFT:
+      return depressing::mouse_buttons::left;
+    case SDL_BUTTON_RIGHT:
+      return depressing::mouse_buttons::right;
+    default:
+      return depressing::mouse_buttons::not_handled;
+    }
+}
+
 // The only global variables that you'll have in this pathetic game. You don't need to worry about
 // the order of initialisation because you need to call their init () functions. Naturally, you first
 // want to initialise SDL's subsystem and then the window.
-std::unique_ptr<depressing::SDL_subsystem> subsystem;
+std::unique_ptr<depressing::SDL_subsystem> game_subsystem;
 std::unique_ptr<depressing::window>        game_window;
-b32                                        quit {false};
+std::unique_ptr<depressing::input_manager> game_input_manager;
+b32                                        game_quit {false};
 
 namespace depressing
 {
@@ -71,10 +154,10 @@ namespace depressing
 	  return false;
 	}
 
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, OpenGL_major_version);
-      SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, OpenGL_minor_version);
-      SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, OpenGL_double_buffer);
-      SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, OpenGL_depth_size);
+      SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, OpenGL_major_version);
+      SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, OpenGL_minor_version);
+      SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, OpenGL_double_buffer);
+      SDL_GL_SetAttribute (SDL_GL_DEPTH_SIZE, OpenGL_depth_size);
 
       return true;
     }
@@ -113,18 +196,21 @@ namespace depressing
   void
   game_shutdown ()
   {
-    quit = true;
+    game_quit = true;
   }
 
   b32
   game_is_shutting_down ()
   {
-    return quit;
+    return game_quit;
   }
 
   void
   game_run ()
   {
+    using namespace depressing;
+
+
     while (!game_is_shutting_down ())
       {
 	SDL_Event event;
@@ -139,19 +225,38 @@ namespace depressing
 	    };
 
 	    if (user_forces_shutdown)
-	      game_shutdown();
+	      {
+		game_shutdown ();
+		break;
+	      }
 
-	    // TODO: handle mouse and keyboard SDL events and store them in your structures
+	    if (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP)
+	      {
+		key_codes k {SDL_key_to_engine (event.key.keysym.sym)};
+		b32 pressed {event.type == SDL_KEYDOWN};
+		game_input_manager->update_key(k, pressed);
+	      }
+	    else if (event.type == SDL_MOUSEMOTION)
+	      {
+		game_input_manager->update_mouse_position (glm::vec2{event.motion.xrel, -event.motion.yrel});
+		game_input_manager->mouse_is_moving_now ();
+	      }
+	    else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
+	      {
+		mouse_buttons b {SDL_mouse_button_to_engine (event.button.button)};
+		b32 pressed {event.type == SDL_MOUSEBUTTONDOWN};
+		game_input_manager->update_mouse_button (b, pressed);
+	      }
 	  }
 
 	if (game_is_shutting_down ())
 	  continue;
 
 	// TEMP
-	glClearColor(0.f, 0.f, 0.f, 1.f);
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor (0.f, 0.f, 0.f, 1.f);
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	SDL_GL_SwapWindow(game_window->get_window());
+	SDL_GL_SwapWindow (game_window->get_window ());
       }
   }
 };
@@ -161,9 +266,9 @@ main ()
 {
   using namespace depressing;
 
-  subsystem = std::make_unique<SDL_subsystem>();
+  game_subsystem = std::make_unique<SDL_subsystem>();
 
-  if (!subsystem)
+  if (!game_subsystem)
     return EXIT_FAILURE;
 
   game_window = std::make_unique<window>();
@@ -171,7 +276,12 @@ main ()
   if (!game_window)
     return EXIT_FAILURE;
 
-  if (!subsystem->init ())
+  game_input_manager = std::make_unique<input_manager>();
+
+  if (!game_input_manager)
+    return EXIT_FAILURE;
+
+  if (!game_subsystem->init ())
     return EXIT_FAILURE;
 
   if (!window_create ())
@@ -248,7 +358,6 @@ depressing::window::init ()
       std::print("{0} - failed to initialise OpenGL function pointers\n", __FUNCTION__);
       return false;
     }
-
 
   glEnable (GL_CULL_FACE);
   glEnable (GL_DEPTH_TEST);

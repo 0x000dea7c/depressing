@@ -8,6 +8,9 @@ Plan as much as possible.
   Too much trouble with static linking, not sure why.
 
 *** DONE Create window and prototype of main game loop.
+
+*** DONE Get rid of old convention for name files (.C and .H)
+*** DONE Handle SDL events and all input keys. Store input state.
 *** TODO Set Fixed Framerate.
   The update of game logic and physics should run at a fixed interval, e.g., 60 times per second.
   Rendering, however, needs to happen as much as possible.
@@ -40,13 +43,12 @@ Plan as much as possible.
   
   The physics update is going to save the previous positions before doing the update and compute the new ones.
 
-  The renderer will compute an interpolated state between previous_positions and current_positions following the formula: interpolated_state = previous_state + alpha * (current_state - previous_state)
+  The renderer will compute an interpolated state between previous_positions and current_positions following the formula: interpolated_state = previous_state + alpha * (current_state - previous_state).
 
-*** TODO Handle SDL events and all input keys. Store input state.
-*** TODO Render a white bg and player texture.
 *** TODO Design game_entity class or something like that.
 *** TODO Design player class.
 *** TODO Move player around with keys, ensure smooth movement.
+*** TODO Render a white bg and player texture.
 *** TODO Implement player animations: load animations, switch between animations based on player's movement, animations are frame based and loop correctly.
 *** TODO Implement camera system ready for scrolling
 *** TODO Load and render tile map.
