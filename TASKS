@@ -1,0 +1,63 @@
+** List of tasks
+
+Plan as much as possible.
+
+*** DONE Add SDL and GLM dependencies.
+*** DONE Initialise SDL and OpenGL.
+*** DONE Statically compile or dynamically? Static is a fucking nightmare for some reason -> dynamically compile
+  Too much trouble with static linking, not sure why.
+
+*** DONE Create window and prototype of main game loop.
+*** TODO Set Fixed Framerate.
+  The update of game logic and physics should run at a fixed interval, e.g., 60 times per second.
+  Rendering, however, needs to happen as much as possible.
+
+  If the game "falls behind" because of a bad frame (drop of fps), then the update should "catch up" by running multiple
+  updates in a single frame.
+
+  Because rendering runs as much as possible, I need to apply interpolation (how the fuck)?
+
+  Event handling should be done at variable or fixed time?
+
+  How do you implement this? What kind of interpolation are they talking about? Interpolate transforms or what?
+
+  Implementing a fixed timestep loop
+
+  1. Compute delta time elapsed since last frame (classic delta time)
+  2. Accumulate delta time to see if physics update threshold reached
+  3. if (time_elapsed >= fixed_timestep) update_physics_step ();
+  4. Repeat update_physics_step () until it "catches up" with accumulated delta time.
+  5. Interpolate between last two physics steps for rendering.
+
+  Points 4 and 5 are not clear. How do I "catch up" exactly? What does it mean to "interploate between last N steps"?
+
+  Input is done at a variable rate or every frame, but I need to keep in mind that:
+
+  - Instantaneous inputs like jumping need to be processed as soon as they happen, before the fixed update.
+  - Continuous inputs like movement, holding a key, need to be processed during the fixed time step.
+
+  I need to use a queue to store input events and in order to not miss any, call the functions to process them (player->process_input ()
+  
+  The physics update is going to save the previous positions before doing the update and compute the new ones.
+
+  The renderer will compute an interpolated state between previous_positions and current_positions following the formula: interpolated_state = previous_state + alpha * (current_state - previous_state)
+
+*** TODO Handle SDL events and all input keys. Store input state.
+*** TODO Render a white bg and player texture.
+*** TODO Design game_entity class or something like that.
+*** TODO Design player class.
+*** TODO Move player around with keys, ensure smooth movement.
+*** TODO Implement player animations: load animations, switch between animations based on player's movement, animations are frame based and loop correctly.
+*** TODO Implement camera system ready for scrolling
+*** TODO Load and render tile map.
+*** TODO Implement collision detection with tiles. 
+*** TODO Implement gravity and jumping mechanics.
+*** TODO Implement player attacks + animations.
+*** TODO Implement background objects (aesthetics, non collidable). Implement parallax scrolling.
+*** TODO Implement UI (health, score, level). Render it on top of the other objects. Render Fonts?
+*** TODO Implement enemies, their animations and their attacks.
+*** TODO Implement hit animation for enemies and player.
+*** TODO Design levels, let's say the game has five.
+*** TODO Implement boss behaviour (only 1 boss because I don't have assets)
+*** TODO Implement game intro, outro, whatever. Game state machine (finite).
+*** TODO Implement options menu to change resolution and audio. Save settings in a file.

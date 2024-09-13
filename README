@@ -2,12 +2,10 @@
 
 It's an attempt to make a 2D side-scroller game.
 
-** Ideas/Misc Thoughts
+** Dependencies That You Need To Install
 
-- My thematic is extremely limited because I don't know how to create any assets, yes, I'm useless, nothing new.
-- Almost every 2D asset is freaking pixel art, so I'm out of chances, I think.
-- Use GNU/Linux ecosystem mascots as characters because why not. What if you could change your current character? In-place? Unlocking them?
-- ...
+- SDL2 (system-wide)
+- GLM  (system-wide)
 
 ** Things I Will Not Address In This Project
 
