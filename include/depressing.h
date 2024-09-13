@@ -1,6 +1,6 @@
 #pragma once
 
-#include "types.H"
+#include "types.h"
 
 namespace depressing
 {

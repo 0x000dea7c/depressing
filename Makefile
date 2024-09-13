@@ -2,7 +2,7 @@
 CXX          = g++
 OUTPUT_DIR   = build
 OUTPUT_BIN   = $(OUTPUT_DIR)/stupid_game
-SOURCE       = source/main.C source/glad.c
+SOURCE       = source/main.cpp source/glad.c
 STD          = -std=gnu++23
 WARNINGS     = -Wall -Wpedantic -Wextra -Winline -Wuninitialized -Wshadow -Wconversion -Wstrict-aliasing=2  \
                -Wnon-virtual-dtor -Wnull-dereference -Woverloaded-virtual -Wformat -Wfloat-equal -Weffc++   \
