@@ -4,10 +4,12 @@
 #include "glad/glad.h"
 
 #include "input_manager.cpp"
+#include "game.cpp"
 
 #include <glm/glm.hpp>
 #include <print>
 #include <memory>
+#include <chrono>
 
 namespace depressing
 {
@@ -98,10 +100,10 @@ SDL_mouse_button_to_engine (i32 sdl_mouse_button)
 // The only global variables that you'll have in this pathetic game. You don't need to worry about
 // the order of initialisation because you need to call their init () functions. Naturally, you first
 // want to initialise SDL's subsystem and then the window.
-std::unique_ptr<depressing::SDL_subsystem> game_subsystem;
-std::unique_ptr<depressing::window>        game_window;
-std::unique_ptr<depressing::input_manager> game_input_manager;
-b32                                        game_quit {false};
+std::unique_ptr<depressing::SDL_subsystem> g_game_subsystem;
+std::unique_ptr<depressing::window>        g_game_window;
+std::unique_ptr<depressing::input_manager> g_game_input_manager;
+std::unique_ptr<depressing::game>          g_game;
 
 namespace depressing
 {
@@ -171,7 +173,7 @@ namespace depressing
   b32
   window_create ()
   {
-    if (!game_window->init ())
+    if (!g_game_window->init ())
       return false;
 
     return true;
@@ -187,7 +189,7 @@ namespace depressing
   b32
   window_set_title (char const* title)
   {
-    if (!game_window->set_title (title))
+    if (!g_game_window->set_title (title))
       return false;
 
     return true;
@@ -196,22 +198,25 @@ namespace depressing
   void
   game_shutdown ()
   {
-    game_quit = true;
+    g_game->shutdown ();
   }
 
   b32
   game_is_shutting_down ()
   {
-    return game_quit;
+    return g_game->is_shutting_down ();
   }
 
   void
   game_run ()
   {
     using namespace depressing;
+    using namespace std::chrono;
 
+    auto previous_frame = high_resolution_clock::now ();
+    f32 lag {0.0f};
 
-    while (!game_is_shutting_down ())
+    while (! g_game->is_shutting_down ())
       {
 	SDL_Event event;
 
@@ -221,12 +226,12 @@ namespace depressing
 	      (event.type == SDL_QUIT) ||
 	      (event.type == SDL_WINDOWEVENT &&
 	       event.window.event == SDL_WINDOWEVENT_CLOSE &&
-	       event.window.windowID == SDL_GetWindowID(game_window->get_window()))
+	       event.window.windowID == SDL_GetWindowID(g_game_window->get_window()))
 	    };
 
 	    if (user_forces_shutdown)
 	      {
-		game_shutdown ();
+		g_game->shutdown ();
 		break;
 	      }
 
@@ -234,29 +239,41 @@ namespace depressing
 	      {
 		key_codes k {SDL_key_to_engine (event.key.keysym.sym)};
 		b32 pressed {event.type == SDL_KEYDOWN};
-		game_input_manager->update_key(k, pressed);
+		g_game_input_manager->update_key(k, pressed);
 	      }
 	    else if (event.type == SDL_MOUSEMOTION)
 	      {
-		game_input_manager->update_mouse_position (glm::vec2{event.motion.xrel, -event.motion.yrel});
-		game_input_manager->mouse_is_moving_now ();
+		g_game_input_manager->update_mouse_position (glm::vec2{event.motion.xrel, -event.motion.yrel});
+		g_game_input_manager->mouse_is_moving_now ();
 	      }
 	    else if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP)
 	      {
 		mouse_buttons b {SDL_mouse_button_to_engine (event.button.button)};
 		b32 pressed {event.type == SDL_MOUSEBUTTONDOWN};
-		game_input_manager->update_mouse_button (b, pressed);
+		g_game_input_manager->update_mouse_button (b, pressed);
 	      }
 	  }
 
-	if (game_is_shutting_down ())
+	if (g_game->is_shutting_down ())
 	  continue;
 
-	// TEMP
-	glClearColor (0.f, 0.f, 0.f, 1.f);
-	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	auto current_frame = high_resolution_clock::now ();
+	auto time_elapsed  = duration<f32> ((current_frame - previous_frame)).count ();
+	previous_frame     = current_frame;
+	lag               += time_elapsed;
 
-	SDL_GL_SwapWindow (game_window->get_window ());
+	while (lag >= g_game->get_fixed_timestep ())
+	  {
+	    g_game->update ();
+	    lag -= g_game->get_fixed_timestep ();
+	  }
+
+	// Value between [0, 1] representing how far you are between the last two physics computations.
+	f32 interpolation {lag / g_game->get_fixed_timestep ()};
+
+	g_game->render (interpolation);
+
+	SDL_GL_SwapWindow (g_game_window->get_window ());
       }
   }
 };
@@ -266,22 +283,28 @@ main ()
 {
   using namespace depressing;
 
-  game_subsystem = std::make_unique<SDL_subsystem>();
+  // Pointer initialisation.
+  g_game_subsystem = std::make_unique<SDL_subsystem> ();
 
-  if (!game_subsystem)
+  if (!g_game_subsystem)
     return EXIT_FAILURE;
 
-  game_window = std::make_unique<window>();
+  g_game_window = std::make_unique<window> ();
 
-  if (!game_window)
+  if (!g_game_window)
     return EXIT_FAILURE;
 
-  game_input_manager = std::make_unique<input_manager>();
+  g_game_input_manager = std::make_unique<input_manager> ();
 
-  if (!game_input_manager)
+  if (!g_game_input_manager)
     return EXIT_FAILURE;
 
-  if (!game_subsystem->init ())
+  g_game = std::make_unique<game> ();
+
+  if (!g_game)
+    return EXIT_FAILURE;
+
+  if (!g_game_subsystem->init ())
     return EXIT_FAILURE;
 
   if (!window_create ())

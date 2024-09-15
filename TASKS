@@ -8,10 +8,9 @@ Plan as much as possible.
   Too much trouble with static linking, not sure why.
 
 *** DONE Create window and prototype of main game loop.
-
 *** DONE Get rid of old convention for name files (.C and .H)
 *** DONE Handle SDL events and all input keys. Store input state.
-*** TODO Set Fixed Framerate.
+*** DONE Set Fixed Framerate.
   The update of game logic and physics should run at a fixed interval, e.g., 60 times per second.
   Rendering, however, needs to happen as much as possible.
 
@@ -48,6 +47,7 @@ Plan as much as possible.
 *** TODO Design game_entity class or something like that.
 *** TODO Design player class.
 *** TODO Move player around with keys, ensure smooth movement.
+*** TODO Since you're using a fixed timestep, you need to handle input differently. Keep in mind: instantenous input and continuous.
 *** TODO Render a white bg and player texture.
 *** TODO Implement player animations: load animations, switch between animations based on player's movement, animations are frame based and loop correctly.
 *** TODO Implement camera system ready for scrolling
