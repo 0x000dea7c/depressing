@@ -32,6 +32,7 @@ namespace depressing
     n,
     m,
     esc,
+    space,
 
     count,
     not_handled
