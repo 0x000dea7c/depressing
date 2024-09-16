@@ -5,6 +5,8 @@ It's an attempt to make a 2D side-scroller game.
 ** Dependencies That You Need To Install
 
 - SDL2 (system-wide)
+- SDL2_image (system-wide)
+- SDL2_mixer (system-wide)
 - GLM  (system-wide)
 
 ** Things I Will Not Address In This Project

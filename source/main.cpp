@@ -1,4 +1,5 @@
 #include "SDL.h"
+#include "SDL_image.h"
 #include "depressing.h"
 #include "types.h"
 #include "glad/glad.h"
@@ -147,15 +148,16 @@ namespace depressing
     b32
     init ()
     {
-      i32 constexpr flags                {SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER};
+      i32 constexpr sdl_flags            {SDL_INIT_VIDEO | SDL_INIT_AUDIO | SDL_INIT_GAMECONTROLLER};
       i32 constexpr OpenGL_major_version {4};
       i32 constexpr OpenGL_minor_version {6};
       i32 constexpr OpenGL_double_buffer {1}; // Means yes, use a double buffer.
       i32 constexpr OpenGL_depth_size    {24};
+      i32 constexpr sdl_image_flags      {IMG_INIT_PNG};
 
       if (SDL_Init (flags) < 0)
 	{
-	  std::print("{0} - Couldn't initialise SDL: {1}\n", __FUNCTION__, SDL_GetError());
+	  std::print("{0} - Couldn't initialise SDL: {1}\n", __PRETTY_FUNCTION__, SDL_GetError());
 	  return false;
 	}
 
@@ -164,11 +166,18 @@ namespace depressing
       SDL_GL_SetAttribute (SDL_GL_DOUBLEBUFFER, OpenGL_double_buffer);
       SDL_GL_SetAttribute (SDL_GL_DEPTH_SIZE, OpenGL_depth_size);
 
+      if (IMG_Init (sdl_image_flags) == 0)
+	{
+	  std::print("{0} - Couldn't initialise SDL_image: {1}\n", __PRETTY_FUNCTION__, IMG_GetError());
+	  return false;
+	}
+
       return true;
     }
 
     ~SDL_subsystem ()
     {
+      IMG_Quit ();
       SDL_Quit ();
     }
   };
