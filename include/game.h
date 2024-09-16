@@ -2,13 +2,20 @@
 
 #include "types.h"
 
+#include <memory>
+
 namespace depressing
 {
+  class input_manager;
+  class player;
+
   class game final
   {
   public:
      game ();
-    ~game ();
+    ~game () = default;
+
+    b32 init (std::shared_ptr<input_manager> input_manager);
 
     f32
     get_fixed_timestep () const
@@ -28,11 +35,14 @@ namespace depressing
       return _quit;
     }
 
+    void process_player_input ();
+
     void update ();
 
     void render (f32 interpolation);
 
   private:
+    std::unique_ptr<player> _player;
     f32 _fixed_timestep;
     b32 _quit;
   };

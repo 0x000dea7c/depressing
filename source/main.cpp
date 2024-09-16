@@ -5,6 +5,7 @@
 
 #include "input_manager.cpp"
 #include "game.cpp"
+#include "player.cpp"
 
 #include <glm/glm.hpp>
 #include <print>
@@ -78,6 +79,8 @@ SDL_key_to_engine (i32 sdl_key)
       return depressing::key_codes::m;
     case SDLK_ESCAPE:
       return depressing::key_codes::esc;
+    case SDLK_SPACE:
+      return depressing::key_codes::space;
     default:
       return depressing::key_codes::not_handled;
     }
@@ -102,7 +105,7 @@ SDL_mouse_button_to_engine (i32 sdl_mouse_button)
 // want to initialise SDL's subsystem and then the window.
 std::unique_ptr<depressing::SDL_subsystem> g_game_subsystem;
 std::unique_ptr<depressing::window>        g_game_window;
-std::unique_ptr<depressing::input_manager> g_game_input_manager;
+std::shared_ptr<depressing::input_manager> g_game_input_manager;
 std::unique_ptr<depressing::game>          g_game;
 
 namespace depressing
@@ -257,6 +260,8 @@ namespace depressing
 	if (g_game->is_shutting_down ())
 	  continue;
 
+	g_game->process_player_input ();
+
 	auto current_frame = high_resolution_clock::now ();
 	auto time_elapsed  = duration<f32> ((current_frame - previous_frame)).count ();
 	previous_frame     = current_frame;
@@ -294,14 +299,14 @@ main ()
   if (!g_game_window)
     return EXIT_FAILURE;
 
-  g_game_input_manager = std::make_unique<input_manager> ();
+  g_game_input_manager = std::make_shared<input_manager> ();
 
   if (!g_game_input_manager)
     return EXIT_FAILURE;
 
   g_game = std::make_unique<game> ();
 
-  if (!g_game)
+  if (!g_game || !g_game->init (g_game_input_manager))
     return EXIT_FAILURE;
 
   if (!g_game_subsystem->init ())
