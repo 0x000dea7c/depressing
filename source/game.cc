@@ -1,5 +1,5 @@
-#include "game.h"
-#include "player.h"
+#include "game.hh"
+#include "player.hh"
 
 #include <print>
 

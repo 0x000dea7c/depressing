@@ -1,17 +1,18 @@
-#include "SDL.h"
-#include "SDL_image.h"
-#include "depressing.h"
-#include "types.h"
+#include "depressing.hh"
+#include "types.hh"
 #include "glad/glad.h"
 
-#include "input_manager.cpp"
-#include "game.cpp"
-#include "player.cpp"
+#include "input_manager.cc"
+#include "game.cc"
+#include "player.cc"
+#include "resource_manager.cc"
 
 #include <glm/glm.hpp>
 #include <print>
 #include <memory>
 #include <chrono>
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_image.h>
 
 namespace depressing
 {
@@ -104,10 +105,11 @@ SDL_mouse_button_to_engine (i32 sdl_mouse_button)
 // The only global variables that you'll have in this pathetic game. You don't need to worry about
 // the order of initialisation because you need to call their init () functions. Naturally, you first
 // want to initialise SDL's subsystem and then the window.
-std::unique_ptr<depressing::SDL_subsystem> g_game_subsystem;
-std::unique_ptr<depressing::window>        g_game_window;
-std::shared_ptr<depressing::input_manager> g_game_input_manager;
-std::unique_ptr<depressing::game>          g_game;
+std::unique_ptr<depressing::SDL_subsystem>    g_game_subsystem;
+std::unique_ptr<depressing::window>           g_game_window;
+std::shared_ptr<depressing::input_manager>    g_game_input_manager;
+std::unique_ptr<depressing::game>             g_game;
+std::unique_ptr<depressing::resource_manager> g_resource_manager;
 
 namespace depressing
 {
@@ -155,7 +157,7 @@ namespace depressing
       i32 constexpr OpenGL_depth_size    {24};
       i32 constexpr sdl_image_flags      {IMG_INIT_PNG};
 
-      if (SDL_Init (flags) < 0)
+      if (SDL_Init (sdl_flags) < 0)
 	{
 	  std::print("{0} - Couldn't initialise SDL: {1}\n", __PRETTY_FUNCTION__, SDL_GetError());
 	  return false;
@@ -313,15 +315,20 @@ main ()
   if (!g_game_input_manager)
     return EXIT_FAILURE;
 
+  g_resource_manager = std::make_unique<resource_manager> ();
+
+  if (!g_resource_manager || ! g_resource_manager->init ())
+    return EXIT_FAILURE;
+
   g_game = std::make_unique<game> ();
 
-  if (!g_game || !g_game->init (g_game_input_manager))
+  if (!g_game || ! g_game->init (g_game_input_manager))
     return EXIT_FAILURE;
 
-  if (!g_game_subsystem->init ())
+  if (! g_game_subsystem->init ())
     return EXIT_FAILURE;
 
-  if (!window_create ())
+  if (! window_create ())
     return EXIT_FAILURE;
 
   game_run ();
