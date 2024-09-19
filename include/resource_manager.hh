@@ -14,17 +14,20 @@ namespace depressing
      resource_manager ();
     ~resource_manager () = default;
 
-    b32 init ();
+    b32  init ();
 
   private:
-    b32 load_texture (texture_type type);
+    b32  load_texture (texture_type type);
 
-    b32 load_shaders ();
+    b32  load_shaders ();
 
-    u32 compile_link_shader (char const* vertex_filename, char const* fragment_filename);
+    u32  compile_link_shader (char const* vertex_filename, char const* fragment_filename);
 
-    b32 shader_has_errors (u32 program_id, shader_type type) const;
+    b32  shader_has_errors (u32 program_id, shader_type type) const;
+
+    void create_quad_for_shader (u32 shader_id, u32 shader_id_cache);
 
     std::unordered_map<texture_type, texture> _textures;
+    std::unordered_map<i32, shader> _shaders;
   };
 };

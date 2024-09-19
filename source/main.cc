@@ -315,11 +315,6 @@ main ()
   if (!g_game_input_manager)
     return EXIT_FAILURE;
 
-  g_resource_manager = std::make_unique<resource_manager> ();
-
-  if (!g_resource_manager || ! g_resource_manager->init ())
-    return EXIT_FAILURE;
-
   g_game = std::make_unique<game> ();
 
   if (!g_game || ! g_game->init (g_game_input_manager))
@@ -329,6 +324,11 @@ main ()
     return EXIT_FAILURE;
 
   if (! window_create ())
+    return EXIT_FAILURE;
+
+  g_resource_manager = std::make_unique<resource_manager> ();
+
+  if (!g_resource_manager || ! g_resource_manager->init ())
     return EXIT_FAILURE;
 
   game_run ();

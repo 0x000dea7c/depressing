@@ -19,7 +19,7 @@ namespace depressing
 
     if (!_player)
       {
-	std::print("{0}: Couldn't create player pointer, out of memory.", __PRETTY_FUNCTION__);
+	std::print("{0}: Couldn't create player pointer, out of memory.\n", __PRETTY_FUNCTION__);
 	return false;
       }
 

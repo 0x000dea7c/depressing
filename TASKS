@@ -45,8 +45,9 @@ Plan as much as possible.
   The renderer will compute an interpolated state between previous_positions and current_positions following the formula: interpolated_state = previous_state + alpha * (current_state - previous_state).
 
 *** DONE Design player class. This is just a skeleton for now.
-*** TODO Implement resource manager for loading textures from files, setting uniforms, etc.
+*** DONE Implement resource manager for loading textures from files, etc.
   The player image needs a different treatment. Setting uniforms is not a responsibility of the resource manager.
+  There aren't many more things I can do right now because the rest of the game is not advanced. I did the skeleton.
 
 *** TODO Load player sprites, render them to the screen.
 *** TODO Move player around with keys, ensure smooth movement.

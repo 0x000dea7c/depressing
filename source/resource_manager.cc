@@ -1,4 +1,5 @@
 #include "resource_manager.hh"
+#include "common.hh"
 
 #include <SDL2/SDL_image.h>
 #include <print>
@@ -9,7 +10,8 @@
 namespace depressing
 {
   resource_manager::resource_manager ()
-    : _textures {}
+    : _textures {},
+      _shaders  {}
   {}
 
   b32
@@ -32,7 +34,7 @@ namespace depressing
 
     if (!image_surface)
       {
-	std::print ("{0}: couldn't load image surface for type {1}", __PRETTY_FUNCTION__, get_type_str (type));
+	std::print ("{0}: couldn't load image surface for type {1}\n", __PRETTY_FUNCTION__, get_type_str (type));
 	return false;
       }
 
@@ -58,10 +60,12 @@ namespace depressing
   b32
   resource_manager::load_shaders ()
   {
-    u32 shader_id {compile_link_shader ("./shaders/basic.vert", "./shaders/basic.frag")};
+    u32 shader_id {compile_link_shader ("./shaders/main.vert", "./shaders/main.frag")};
 
     if (shader_id == 0)
       return false;
+
+    create_quad_for_shader (shader_id, constants::shader_simple);
 
     return true;
   }
@@ -69,64 +73,70 @@ namespace depressing
   u32
   resource_manager::compile_link_shader (char const* vertex_filename, char const* fragment_filename)
   {
-    // TODO: here!
-    std::ifstream vertfs (vertex);
-    std::ifstream fragfs (fragment);
+    std::ifstream vertfs (vertex_filename);
+    std::ifstream fragfs (fragment_filename);
 
-    if (!vertfs) {
-      std::cerr << __FUNCTION__ << ": couldn't open vertex file: " << vertex << '\n';
-      return false;
-    }
+    if (!vertfs)
+      {
+	std::print ("{0}: couldn't open vertex file at location: {1}\n", __PRETTY_FUNCTION__, vertex_filename);
+	return false;
+      }
 
-    if (!fragfs) {
-      std::cerr << __FUNCTION__ << ": couldn't open fragment file: " << fragment << '\n';
-      return false;
-    }
+    if (!fragfs)
+      {
+	std::print ("{0}: couldn't open fragment file at location: {1}\n", __PRETTY_FUNCTION__, fragment_filename);
+	return false;
+      }
 
     std::stringstream vertss;
     std::stringstream fragss;
     vertss << vertfs.rdbuf ();
     fragss << fragfs.rdbuf ();
 
-    std::string vertcode {vertss.str()};
-    std::string fragcode {fragss.str()};
+    std::string vertcode {vertss.str ()};
+    std::string fragcode {fragss.str ()};
 
     char const* vertcodec {vertcode.c_str ()};
     char const* fragcodec {fragcode.c_str ()};
 
-    u32 vertexShaderId {glCreateShader (GL_VERTEX_SHADER)};
+    u32 vertex_shader_id {glCreateShader (GL_VERTEX_SHADER)};
 
-    glShaderSource (vertexShaderId, 1, &vertcodec, nullptr);
-    glCompileShader (vertexShaderId);
+    glShaderSource (vertex_shader_id, 1, &vertcodec, nullptr);
+    glCompileShader (vertex_shader_id);
 
-    if (ShaderHasCompilationErrors(vertexShaderId, shader_type::vertex)) {
-      glDeleteShader(vertexShaderId);
-      return 0;
-    }
+    if (shader_has_errors (vertex_shader_id, shader_type::vertex))
+      {
+	glDeleteShader (vertex_shader_id);
+	return 0;
+      }
 
-    u32 fragmentShaderId{glCreateShader(GL_FRAGMENT_SHADER)};
-    glShaderSource(fragmentShaderId, 1, &fragcodec, nullptr);
-    glCompileShader(fragmentShaderId);
-    if (ShaderHasCompilationErrors(fragmentShaderId, shader_type::fragment)) {
-      glDeleteShader(vertexShaderId);
-      glDeleteShader(fragmentShaderId);
-      return 0;
-    }
+    u32 fragment_shader_id {glCreateShader (GL_FRAGMENT_SHADER)};
+    glShaderSource (fragment_shader_id, 1, &fragcodec, nullptr);
+    glCompileShader (fragment_shader_id);
 
-    u32 shaderProgram{glCreateProgram()};
-    glAttachShader(shaderProgram, vertexShaderId);
-    glAttachShader(shaderProgram, fragmentShaderId);
-    glLinkProgram(shaderProgram);
-    if (ShaderHasCompilationErrors(shaderProgram, shader_type::program)) {
-      glDeleteShader(vertexShaderId);
-      glDeleteShader(fragmentShaderId);
-      return 0;
-    }
+    if (shader_has_errors (fragment_shader_id, shader_type::fragment))
+      {
+	glDeleteShader (vertex_shader_id);
+	glDeleteShader (fragment_shader_id);
+	return 0;
+      }
 
-    glDeleteShader(vertexShaderId);
-    glDeleteShader(fragmentShaderId);
+    u32 shader_program_id {glCreateProgram ()};
+    glAttachShader (shader_program_id, vertex_shader_id);
+    glAttachShader (shader_program_id, fragment_shader_id);
+    glLinkProgram (shader_program_id);
 
-    return shaderProgram;
+    if (shader_has_errors (shader_program_id, shader_type::program))
+      {
+	glDeleteShader (vertex_shader_id);
+	glDeleteShader (fragment_shader_id);
+	return 0;
+      }
+
+    glDeleteShader (vertex_shader_id);
+    glDeleteShader (fragment_shader_id);
+
+    return shader_program_id;
   }
 
   b32
@@ -163,5 +173,33 @@ namespace depressing
       }
 
     return false;
+  }
+
+  void
+  resource_manager::create_quad_for_shader (u32 shader_id, u32 shader_id_cache)
+  {
+    std::array<f32, 18> vertices
+      {
+	-1.f, -1.f, 0.f,
+	 1.f, -1.f, 0.f,
+	-1.f,  1.f, 0.f,
+	-1.f,  1.f, 0.f,
+	 1.f, -1.f, 0.f,
+	 1.f,  1.f, 0.f,
+      };
+
+    u32 vao;
+    u32 vbo;
+
+    glGenVertexArrays (1, &vao);
+    glGenBuffers (1, &vbo);
+    glBindVertexArray (vao);
+    glBindBuffer (GL_ARRAY_BUFFER, vbo);
+
+    glBufferData (GL_ARRAY_BUFFER, sizeof (vertices), vertices.data (), GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    _shaders.emplace (shader_id_cache, shader {shader_id, vao, vbo});
   }
 };
