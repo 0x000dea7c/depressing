@@ -1,6 +1,6 @@
-#include "player.h"
-#include "input_manager.h"
-#include "game.h"
+#include "player.hh"
+#include "input_manager.hh"
+#include "game.hh"
 
 namespace depressing
 {
@@ -10,7 +10,8 @@ namespace depressing
       _speed          {1.0f, 1.0f},
       _input_manager  {input_manager},
       _fixed_timestep {g->get_fixed_timestep ()}
-  {}
+  {
+  }
 
   void
   player::process_input ()

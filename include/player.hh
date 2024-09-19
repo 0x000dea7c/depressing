@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 #include <queue>
 #include <memory>
-#include "player_events.h"
+#include "player_events.hh"
 
 namespace depressing
 {

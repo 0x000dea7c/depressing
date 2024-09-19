@@ -1,8 +1,8 @@
 #pragma once
 
-#include "types.h"
-#include "key_codes.h"
-#include "mouse_buttons.h"
+#include "types.hh"
+#include "key_codes.hh"
+#include "mouse_buttons.hh"
 
 #include <array>
 #include <glm/glm.hpp>
